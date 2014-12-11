@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NetworkConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/ServiceHosting/2011/07/NetworkConfiguration">
+  <VirtualNetworkConfiguration>
+    <Dns>
+      <DnsServers>
+        <DnsServer name="WPDNS" IPAddress="10.162.1.1" />
+      </DnsServers>
+    </Dns>
+    <LocalNetworkSites>
+      <LocalNetworkSite name="Europe">
+        <AddressSpace>
+          <AddressPrefix>10.0.0.0/24</AddressPrefix>
+        </AddressSpace>
+        <VPNGatewayAddress>10.162.0.1</VPNGatewayAddress>
+      </LocalNetworkSite>
+    </LocalNetworkSites>
+    <VirtualNetworkSites>
+      <VirtualNetworkSite name="WP" AffinityGroup="Main">
+        <AddressSpace>
+          <AddressPrefix>10.162.0.0/18</AddressPrefix>
+        </AddressSpace>
+        <Subnets>
+          <Subnet name="GatewaySubnet">
+            <AddressPrefix>10.162.0.0/29</AddressPrefix>
+          </Subnet>
+          <Subnet name="Infrastructure">
+            <AddressPrefix>10.162.1.0/24</AddressPrefix>
+          </Subnet>
+          <Subnet name="Dev">
+            <AddressPrefix>10.162.2.0/23</AddressPrefix>
+          </Subnet>
+          <Subnet name="Test">
+            <AddressPrefix>10.162.4.0/23</AddressPrefix>
+          </Subnet>
+        </Subnets>
+        <DnsServersRef>
+          <DnsServerRef name="WPDNS" />
+        </DnsServersRef>
+        <Gateway>
+          <ConnectionsToLocalNetwork>
+            <LocalNetworkSiteRef name="Europe">
+              <Connection type="IPsec" />
+            </LocalNetworkSiteRef>
+          </ConnectionsToLocalNetwork>
+        </Gateway>
+      </VirtualNetworkSite>
+    </VirtualNetworkSites>
+  </VirtualNetworkConfiguration>
+</NetworkConfiguration>
