@@ -1,4 +1,3 @@
 @(
-    @{Name="Main";Location="North Europe"},
-    @{Name="Davlind";Location="North Europe"}
+    @{Name="WPNE";Location="North Europe"}
 )

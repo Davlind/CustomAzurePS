@@ -4,6 +4,7 @@ write-progress -activity 'Authenticating' -percentcomplete 0;
 
 EnsureAuthentication
 
+# Create Affinity group
 write-progress -activity 'Creating Affinity Groups' -percentcomplete 10;
 
 $ag = .\..\Config\affinityGroup.ps1
@@ -25,6 +26,7 @@ $ag | % {$i=1;$len=$ag.length} {
 }
 write-progress -id 1 -activity 'none' -completed
 
+#Create Storage accounts
 write-progress -activity 'Creating Storage' -percentcomplete 50;
 
 $storage = .\..\Config\storage.ps1
