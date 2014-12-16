@@ -15,7 +15,7 @@
       </LocalNetworkSite>
     </LocalNetworkSites>
     <VirtualNetworkSites>
-      <VirtualNetworkSite name="WP" AffinityGroup="Main">
+      <VirtualNetworkSite name="WP" AffinityGroup="WPNE">
         <AddressSpace>
           <AddressPrefix>10.162.0.0/18</AddressPrefix>
         </AddressSpace>

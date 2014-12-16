@@ -1,4 +1,4 @@
 @(
-    @{StorageAccountName = "ifwpimages";    AffinityGroup = "Main"},
-    @{StorageAccountName = "ifwpdsc";       AffinityGroup = "Main"}
+    @{StorageAccountName = "ifwposimages";    AffinityGroup = "WPNE"},
+    @{StorageAccountName = "ifwpdsc";       AffinityGroup = "WPNE"}
 )
