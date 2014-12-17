@@ -36,3 +36,6 @@ $includeBaseDirectory = $false
 [System.IO.Compression.ZipFile]::CreateFromDirectory("$dist\WaypointAzure", $zipFileName, $compressionLevel, $includeBaseDirectory)
 
 Move-Item $zipFileName $dist -Force
+
+Remove-Module WaypointAzure -ErrorAction SilentlyContinue
+Import-Module WaypointAzure
