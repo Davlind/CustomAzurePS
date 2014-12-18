@@ -1,3 +1,4 @@
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
 
 function New-WPStorageAccount {
     [CmdletBinding(SupportsShouldProcess=$true)]

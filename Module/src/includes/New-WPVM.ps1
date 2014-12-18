@@ -1,6 +1,6 @@
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
+
 function New-WPVM {
-
-
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         [Parameter(Mandatory=$true)]
@@ -29,13 +29,12 @@ function New-WPVM {
 
         [Parameter(Mandatory=$true)]
         [PSCredential]$Credentials
-
     )
 
     Write-VerboseBegin $MyInvocation.MyCommand
 
     Write-VerboseTS "Creating virtual machine"
-    $vmName = 'ifwp' + $Name + 'vm' + ("{0:D2}" -f $i)
+    $vmName = 'ifwp' + $Name + 'vm' + ("{0:D2}" -f $VMIndex)
     $adminUserName = $vmName + $env:UserName
 
     Write-VerboseTS "Virtual Machine Name: $vmName"

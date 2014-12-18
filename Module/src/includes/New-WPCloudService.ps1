@@ -1,4 +1,4 @@
-
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
 
 function New-WPCloudService {
     [CmdletBinding(SupportsShouldProcess=$true)]

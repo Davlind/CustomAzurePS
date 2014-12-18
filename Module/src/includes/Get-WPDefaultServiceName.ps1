@@ -1,4 +1,4 @@
-function New-WPEnvironmentTest {
+function Get-WPDefaultServiceName {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         [Parameter(Position=1)]

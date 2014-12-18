@@ -1,3 +1,7 @@
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) New-WPEnvironmentBase.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) Get-WPDefaultServiceName.ps1)
+
 function New-WPEnvironmentTest {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
@@ -13,9 +17,14 @@ function New-WPEnvironmentTest {
     }
 
     New-WPEnvironmentBase `
-        -SubnetName 'Test'
+        -SubnetName 'Test' `
+        -Name $Name
 
     Write-VerboseCompleted $MyInvocation.MyCommand
 }
-
-Export-ModuleMember -Function New-WPEnvironmentTest
+try {
+    Export-ModuleMember -Function New-WPEnvironmentTest -ErrorAction Ignore
+}
+catch {
+    #ignore...
+}

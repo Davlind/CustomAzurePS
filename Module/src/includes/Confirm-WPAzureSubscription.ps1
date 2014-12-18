@@ -1,3 +1,5 @@
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
+
 function Confirm-WPAzureSubscription
 {
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -15,22 +17,19 @@ function Confirm-WPAzureSubscription
 
     # Select Subscription
 
-    $subscriptionName = Get-AzureSubscription `
+    $subscriptions = Get-AzureSubscription
+
+    $subscriptionName = $subscriptions `
         | ? {$_.IsCurrent} `
         | select -ExpandProperty SubscriptionName
 
-    $title = "Current Subscription"
-    $message = "Your current subscription is $subscriptionName."
-
-    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Use $subscriptionName", `
-        "Uses $subscriptionName for all further operations."
-
-    $no = New-Object System.Management.Automation.Host.ChoiceDescription "&Change subscription", `
-        "Select another subscription for further operations."
-
-    $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-
-    $result = $host.ui.PromptForChoice($title, $message, $options, 0)
+    $result = Invoke-Prompt `
+        -Title "Current Subscription" `
+        -Message "Your current subscription is $subscriptionName." `
+        -FirstChoice "&Use $subscriptionName" `
+        -FirstChoiceHelp "Uses $subscriptionName for all further operations." `
+        -SecondChoice "&Change subscription" `
+        -SecondChoiceHelp "Select another subscription for further operations."
 
     switch ($result)
         {
@@ -39,7 +38,7 @@ function Confirm-WPAzureSubscription
                 return $subscriptionName
             }
             1 {
-                $subscription =  Get-AzureSubscription `
+                $subscription =  $subscriptions `
                     | Out-GridView -PassThru -Title "Select Azure Subscription"
 
                 Select-AzureSubscription -SubscriptionName $subscription.SubscriptionName

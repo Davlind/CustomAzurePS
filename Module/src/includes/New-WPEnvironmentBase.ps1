@@ -1,3 +1,11 @@
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) Confirm-WPAzureSubscription.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) Test-WPADCredentials.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) Get-WPLatestMicrosoftImage.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) New-WPVM.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) New-WPStorageAccount.ps1)
+. (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) New-WPCloudService.ps1)
+
 function New-WPEnvironmentBase {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
@@ -35,6 +43,7 @@ function New-WPEnvironmentBase {
     {
         throw "No OS Image was found matching '$ImageLabel'"
     }
+
     Write-Output $image
     Write-Verbose "Selected image '$($image.Label)' ($($image.PublishedDate))"
 
