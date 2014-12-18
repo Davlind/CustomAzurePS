@@ -7,11 +7,21 @@
 
 $ErrorActionPreference = "Stop"
 
+$testResult = . "$PSScriptRoot\runtests.ps1"
+
+if ($testResult.TotalCount -gt $testResult.PassedCount) {
+
+    Write-Error "Aborting build due to $($testResult.TotalCount - $testResult.PassedCount) test(s) not passing"
+    return
+}
+
+
 $scriptPath = Split-Path -LiteralPath $(if ($PSVersionTable.PSVersion.Major -ge 3) { $PSCommandPath } else { & { $MyInvocation.ScriptName } })
 
 $src = (Join-Path (Split-Path $scriptPath) 'src')
 $dist = (Join-Path (Split-Path $scriptPath) 'dist')
 if (Test-Path $dist) {
+    Write-Output 'Deleting old version'
     Remove-Item $dist -Force -Recurse
 }
 New-Item $dist -ItemType Directory | Out-Null
@@ -33,9 +43,25 @@ if (Test-Path $zipFileName) {
 
 $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
 $includeBaseDirectory = $false
+
+Write-Output 'Creating zip-file'
 [System.IO.Compression.ZipFile]::CreateFromDirectory("$dist\WaypointAzure", $zipFileName, $compressionLevel, $includeBaseDirectory)
 
 Move-Item $zipFileName $dist -Force
 
+$modulePaths = [Environment]::GetEnvironmentVariable("PSModulePath", "User")
+$modulePath = (Split-String -input $modulePaths -separator ';')[0]
+
+Write-Output "Copying module to user module path"
+if (Test-Path $modulePath)
+{
+    Remove-Item $modulePath\WaypointAzure -Force -Recurse
+}
+
+Copy-Item -Path $dist\WaypointAzure `
+          -Destination $modulePath\WaypointAzure `
+          -Recurse
+
+Write-Output "Importing module"
 Remove-Module WaypointAzure -ErrorAction SilentlyContinue
 Import-Module WaypointAzure
