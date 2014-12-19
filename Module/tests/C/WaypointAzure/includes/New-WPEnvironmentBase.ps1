@@ -10,17 +10,8 @@
 function New-WPEnvironmentBase {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
-        [Parameter(Mandatory=$true, ParameterSetName = "NamingConvention")]
-        [string]$Name,
-
-        [Parameter(Mandatory=$true, ParameterSetName = "NamingExplicit")]
-        [string]$StorageName,
-
-        [Parameter(Mandatory=$true, ParameterSetName = "NamingExplicit")]
-        [string]$ServiceName,
-
-        [Parameter(Mandatory=$true, ParameterSetName = "NamingExplicit")]
-        [string]$VirtualMachineName,
+        [Parameter(Position=1)]
+        [string]$Name = '',
 
         [Parameter(Position=2)]
         [string]$SubnetName='Dev',
@@ -55,13 +46,10 @@ function New-WPEnvironmentBase {
         Test-WPADCredentials $credentials
     }
 
-
-    if ($PSCmdlet.ParameterSetName -eq 'NamingConvention')
+    $defaultNames = @{}
+    if ($Name -eq '')
     {
-        $names = Get-WPDefaultServiceName $Name
-        $StorageName = $names.storageAccountName
-        $ServiceName = $names.serviceName
-        $VirtualMachineName = $names.VirtualMachineName
+        $defaultNames = Get-WPDefaultServiceName 'Test'
     }
 
     $image = Get-WPLatestMicrosoftImage $ImageLabel
@@ -70,21 +58,26 @@ function New-WPEnvironmentBase {
         throw "No OS Image was found matching '$ImageLabel'"
     }
 
-    Write-VerboseTS "Selected image '$($image.Label)' ($($image.PublishedDate))"
+    Write-Verbose "Selected image '$($image.Label)' ($($image.PublishedDate))"
 
-    $storageAccount = New-WPStorageAccount -Name $StorageName -AffinityGroup 'WPNE'
-
+    Write-Output $defaultNames.storageAccountName
+    $storageAccount = New-WPStorageAccount -Name $defaultNames.storageAccountName -AffinityGroup 'WPNE'
+    Write-Output $storageAccount
     Set-AzureSubscription `
         -SubscriptionName $currentSubscription `
-        -CurrentStorageAccountName $StorageName
+        -CurrentStorageAccountName $storageAccount.storageAccountName
 
-    $service = New-WPCloudService -Name $ServiceName -AffinityGroup 'WPNE'
+    Write-Output $defaultNames.ServiceName
+    $service = New-WPCloudService -Name $defaultNames.ServiceName -AffinityGroup 'WPNE'
+    Write-Output $service
 
     for ($i=1; $i -le $InstanceCount; $i++)
     {
+        Write-Output ($defaultNames.VirtualMachineName -f $i)
         New-WPVM `
-        -Name ($VirtualMachineName -f $i) `
-        -ServiceName $ServiceName `
+        -Name $Name `
+        -VmIndex $i `
+        -ServiceName ($defaultNames.VirtualMachineName -f $i) `
         -AffinityGroup 'WPNE' `
         -VNetName 'WP' `
         -SubnetName $SubnetName `

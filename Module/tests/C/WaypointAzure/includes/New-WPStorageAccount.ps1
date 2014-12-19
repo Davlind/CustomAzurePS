@@ -1,6 +1,6 @@
 . (join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) helpers.ps1)
 
-function New-WPCloudService {
+function New-WPStorageAccount {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
         [Parameter(Position=1, Mandatory=$true)]
@@ -12,14 +12,16 @@ function New-WPCloudService {
 
     Write-VerboseBegin $MyInvocation.MyCommand
 
-    # Create Cloud Service
-    $service = Get-AzureService -ServiceName $Name -ErrorAction SilentlyContinue
-    if (!$service)
+        # Create Storage account
+    $storageAccount = Get-AzureStorageAccount -StorageAccountName $Name -ErrorAction SilentlyContinue
+    if (!$storageAccount)
     {
-        Write-Host "Creating Cloud Service: $Name"
-        $service = New-AzureService -ServiceName $Name -AffinityGroup $AffinityGroup
+        $storageAccount = New-AzureStorageAccount `
+        -StorageAccountName $Name `
+        -AffinityGroup $AffinityGroup
     }
 
     Write-VerboseCompleted $MyInvocation.MyCommand
-    return $service
+
+    return $storageAccount
 }

@@ -16,6 +16,7 @@ function New-WPStorageAccount {
     $storageAccount = Get-AzureStorageAccount -StorageAccountName $Name -ErrorAction SilentlyContinue
     if (!$storageAccount)
     {
+        Write-Host "Creating Storage Account: $Name"
         $storageAccount = New-AzureStorageAccount `
         -StorageAccountName $Name `
         -AffinityGroup $AffinityGroup

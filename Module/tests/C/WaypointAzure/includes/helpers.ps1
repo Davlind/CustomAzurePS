@@ -1,6 +1,6 @@
 function Write-VerboseTS {
     param (
-        [Parameter(Position=1, ValueFromPipeline=$true)]
+        [Parameter(Position=1)]
         [string]$Message
     )
 
@@ -13,20 +13,7 @@ function Write-VerboseBegin {
         [string]$FunctionName
     )
 
-    Write-VerboseTS ("Begin Operation {0}" -f $FunctionName)
-
-    # $ParameterList = (Get-Command -Name $FunctionName).Parameters;
-
-    # # Grab each parameter value, using Get-Variable
-    # foreach ($Parameter in $ParameterList) {
-
-
-    #     $x = Get-Variable -Name $Parameter.Values.Name -ErrorAction SilentlyContinue
-
-    #     $Parameter.Values
-
-    #     #Get-Variable -Name $ParameterList;
-    # }
+    Write-Verbose ("{0} - Begin Operation {1}" -f (Get-Date).ToLongTimeString(), $FunctionName)
 }
 
 function Write-VerboseCompleted {
@@ -35,7 +22,7 @@ function Write-VerboseCompleted {
         [string]$FunctionName
     )
 
-    Write-VerboseTS ("Completed Operation {0}" -f $FunctionName)
+    Write-Verbose ("{0} - Completed Operation {1}" -f (Get-Date).ToLongTimeString(), $FunctionName)
 }
 
 function Invoke-Prompt {

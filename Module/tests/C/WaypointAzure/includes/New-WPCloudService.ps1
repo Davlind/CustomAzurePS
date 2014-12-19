@@ -16,7 +16,7 @@ function New-WPCloudService {
     $service = Get-AzureService -ServiceName $Name -ErrorAction SilentlyContinue
     if (!$service)
     {
-        Write-Host "Creating Cloud Service: $Name"
+        Write-Verbose "Creating Cloud Service: $serviceName in affinity group $AffinityGroup"
         $service = New-AzureService -ServiceName $Name -AffinityGroup $AffinityGroup
     }
 

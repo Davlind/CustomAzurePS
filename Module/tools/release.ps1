@@ -50,17 +50,24 @@ Write-Output 'Creating zip-file'
 Move-Item $zipFileName $dist -Force
 
 $modulePaths = [Environment]::GetEnvironmentVariable("PSModulePath", "User")
-$modulePath = (Split-String -input $modulePaths -separator ';')[0]
 
-Write-Output "Copying module to user module path"
-if (Test-Path $modulePath)
+$modulePath = $modulePaths
+if ($modulePath -contains ';')
+{
+  $modulePath = (Split-String -input $modulePaths -separator ';')[0]
+}
+
+Write-Output "Copying module to user module path $modulePath"
+if (Test-Path $modulePath\WaypointAzure)
 {
     Remove-Item $modulePath\WaypointAzure -Force -Recurse
 }
 
+
 Copy-Item -Path $dist\WaypointAzure `
           -Destination $modulePath\WaypointAzure `
-          -Recurse
+          -Recurse `
+          -Force
 
 Write-Output "Importing module"
 Remove-Module WaypointAzure -ErrorAction SilentlyContinue

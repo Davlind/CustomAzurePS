@@ -5,14 +5,18 @@
 function New-WPEnvironmentTest {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
+        [Parameter(Position=1)]
+        [string]$Name,
+
         [switch]$NoDomain
     )
 
     Write-VerboseBegin $MyInvocation.MyCommand
+    Write-Output $NoDomain
 
     New-WPEnvironmentBase `
         -SubnetName 'Test' `
-        -Name 'Test' `
+        -Name $Name `
         -NoDomain:$NoDomain.IsPresent
 
     Write-VerboseCompleted $MyInvocation.MyCommand

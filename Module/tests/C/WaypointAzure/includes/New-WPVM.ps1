@@ -7,6 +7,9 @@ function New-WPVM {
         [string]$Name,
 
         [Parameter(Mandatory=$true)]
+        [int]$VmIndex,
+
+        [Parameter(Mandatory=$true)]
         [string]$ServiceName,
 
         [Parameter(Mandatory=$true)]
@@ -30,16 +33,24 @@ function New-WPVM {
 
     Write-VerboseBegin $MyInvocation.MyCommand
 
-    $adminUserName = $Name + $env:UserName
+    Write-VerboseTS "Creating virtual machine"
+    $vmName = 'ifwp' + $Name + 'vm' + ("{0:D2}" -f $VMIndex)
+    $adminUserName = $vmName + $env:UserName
 
-    Write-Host "Preparing VM Configuration for $Name"
+    Write-VerboseTS "Virtual Machine Name: $vmName"
+    Write-VerboseTS "Virtual Machine Image: $($Image.Label) ($($Image.ImageName))"
+    Write-VerboseTS "Virtual Machine Size: $InstanceSize"
+    Write-VerboseTS "Virtual Machine Local Admin: $adminUserName"
+    Write-VerboseTS "Virtual Machine Local Admin Password: Same as $($Credentials.Username)"
+    Write-VerboseTS "Virtual Machine VNet: WP"
+    Write-VerboseTS "Virtual Machine Affinity Group: WPNE"
+
     $vm = New-AzureVMConfig `
-    -Name $Name `
+    -Name $vmName `
     -ImageName $image.ImageName `
     -InstanceSize $InstanceSize
 
     # Specify VM local admin and domain join creds
-    Write-Host "Preparing VM Provisioning Configuration for $Name"
     $vm = Add-AzureProvisioningConfig `
     -VM $vm `
     -Windows `
@@ -62,7 +73,6 @@ function New-WPVM {
     # -PublicPort 443
 
     # Specify VNet Subnet for VM
-    Write-Host "Preparing VM Subnet Configuration for $Name"
     $vm = Set-AzureSubnet `
     -VM $vm `
     -SubnetNames $SubnetName
@@ -73,7 +83,6 @@ function New-WPVM {
     # -AvailabilitySetName $Using:availabilitySetName
 
     # Provision new VM with specified configuration
-    Write-Host "Creating VM: $Name"
     New-AzureVM `
     -VMs $vm `
     -ServiceName $ServiceName `
