@@ -13,12 +13,11 @@ function New-WPStorageAccount {
     Write-VerboseBegin $MyInvocation.MyCommand
 
         # Create Storage account
-    $storageAccountName = ('ifwp' + $Name + 'stor').ToLower()
-    $storageAccount = Get-AzureStorageAccount -StorageAccountName $storageAccountName -ErrorAction SilentlyContinue
+    $storageAccount = Get-AzureStorageAccount -StorageAccountName $Name -ErrorAction SilentlyContinue
     if (!$storageAccount)
     {
         $storageAccount = New-AzureStorageAccount `
-        -StorageAccountName $storageAccountName `
+        -StorageAccountName $Name `
         -AffinityGroup $AffinityGroup
     }
 

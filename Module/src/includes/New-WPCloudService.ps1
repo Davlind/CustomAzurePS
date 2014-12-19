@@ -13,12 +13,11 @@ function New-WPCloudService {
     Write-VerboseBegin $MyInvocation.MyCommand
 
     # Create Cloud Service
-    $serviceName = 'ifwp' + $Name + 'svc'
-    $service = Get-AzureService -ServiceName $serviceName -ErrorAction SilentlyContinue
+    $service = Get-AzureService -ServiceName $Name -ErrorAction SilentlyContinue
     if (!$service)
     {
         Write-Verbose "Creating Cloud Service: $serviceName in affinity group $AffinityGroup"
-        $service = New-AzureService -ServiceName $serviceName -AffinityGroup $AffinityGroup
+        $service = New-AzureService -ServiceName $Name -AffinityGroup $AffinityGroup
     }
 
     Write-VerboseCompleted $MyInvocation.MyCommand
