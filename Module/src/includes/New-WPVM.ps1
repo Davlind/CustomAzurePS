@@ -61,6 +61,13 @@ function New-WPVM {
     # -LocalPort 443 `
     # -PublicPort 443
 
+    Write-Host "Preparing VM Desired State Configuration for $Name"
+    $vm = Set-AzureVMDSCExtension `
+    -VM $vm `
+    -ConfigurationArchive 'Test.ps1.zip' `
+    -ConfigurationName 'TestConfig'
+
+
     # Specify VNet Subnet for VM
     Write-Host "Preparing VM Subnet Configuration for $Name"
     $vm = Set-AzureSubnet `

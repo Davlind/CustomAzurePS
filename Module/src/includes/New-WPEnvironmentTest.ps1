@@ -17,6 +17,7 @@ function New-WPEnvironmentTest {
 
     Write-VerboseCompleted $MyInvocation.MyCommand
 }
+
 try {
     Export-ModuleMember -Function New-WPEnvironmentTest -ErrorAction Ignore
 }

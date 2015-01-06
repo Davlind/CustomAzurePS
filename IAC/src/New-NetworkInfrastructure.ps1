@@ -6,11 +6,12 @@ EnsureAuthentication
 
 write-progress -activity 'Creating Virtual Network' -percentcomplete 20;
 
+# Create VNet
 $networkFile = (Resolve-Path .\..\Config\Networks.netcfg)
 Set-AzureVNetConfig -ConfigurationPath $networkFile
 Write-Host "Virtual Network configuration has been applied"
 
-
+# Create Gateway
 $gateway = .\..\Config\gateway.ps1
 $gateway | % {$i=1;$len=$gateway.length} {
     New-AzureVNetGateway @_

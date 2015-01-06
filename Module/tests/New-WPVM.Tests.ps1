@@ -7,12 +7,12 @@ Describe "New-WPWM" {
     Mock New-AzureVMConfig {return New-Object Microsoft.WindowsAzure.Commands.ServiceManagement.Model.PersistentVM}
     Mock Add-AzureProvisioningConfig {return New-Object Microsoft.WindowsAzure.Commands.ServiceManagement.Model.PersistentVM}
     Mock Set-AzureSubnet {return New-Object Microsoft.WindowsAzure.Commands.ServiceManagement.Model.PersistentVM}
+    Mock Set-AzureVMDSCExtension {return New-Object Microsoft.WindowsAzure.Commands.ServiceManagement.Model.PersistentVM}
     Mock New-AzureVM {return}
 
     It "virtual machine config should be set" {
         New-WPVM `
             -Name 'Name' `
-            -VmIndex 1 `
             -ServiceName 'serviceName' `
             -AffinityGroup 'ag' `
             -VNetName 'vnet' `
@@ -21,13 +21,12 @@ Describe "New-WPWM" {
             -InstanceSize 'size' `
             -Credentials (New-Object System.Management.Automation.PSCredential("user", (ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force))) `
 
-        Assert-MockCalled New-AzureVMConfig -Exact 1 -ParameterFilter { $ImageName -eq 'imageName' -and $InstanceSize -eq 'size' -and $Name -eq 'ifwpNamevm01' } -Scope It
+        Assert-MockCalled New-AzureVMConfig -Exact 1 -ParameterFilter { $ImageName -eq 'imageName' -and $InstanceSize -eq 'size' -and $Name -eq 'Name' } -Scope It
     }
 
     It "provisioning config should be set" {
         New-WPVM `
             -Name 'Name' `
-            -VmIndex 1 `
             -ServiceName 'serviceName' `
             -AffinityGroup 'ag' `
             -VNetName 'vnet' `
@@ -36,13 +35,12 @@ Describe "New-WPWM" {
             -InstanceSize 'size' `
             -Credentials (New-Object System.Management.Automation.PSCredential("user", (ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force))) `
 
-        Assert-MockCalled Add-AzureProvisioningConfig -Exact 1 -ParameterFilter { $Windows -eq $true -and $AdminUserName -eq ('ifwpNamevm01' + $env:username) } -Scope It
+        Assert-MockCalled Add-AzureProvisioningConfig -Exact 1 -ParameterFilter { $Windows -eq $true -and $AdminUserName -eq ('Name' + $env:username) } -Scope It
     }
 
     It "subnet config should be set" {
         New-WPVM `
             -Name 'Name' `
-            -VmIndex 1 `
             -ServiceName 'serviceName' `
             -AffinityGroup 'ag' `
             -VNetName 'vnet' `
@@ -57,7 +55,6 @@ Describe "New-WPWM" {
     It "creates a new vm" {
         New-WPVM `
             -Name 'Name' `
-            -VmIndex 1 `
             -ServiceName 'serviceName' `
             -AffinityGroup 'ag' `
             -VNetName 'vnet' `

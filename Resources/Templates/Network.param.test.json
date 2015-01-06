@@ -1,0 +1,21 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "loc": {
+            "value": "Europe North"
+        },
+        "vnetName": {
+            "value": "WPNet"
+        },
+        "addressSpaceCidr": {
+            "value": "10.162.0.0/18"
+        },
+        "subnetName": {
+            "value": "Gateway"
+        },
+        "subnetCidr": {
+            "value": "10.162.0.0/29"
+        }
+    }
+}

@@ -7,7 +7,7 @@ Describe "New-WPEnvironmentTest" {
         Mock New-WPEnvironmentBase {return}
 
         It "subnet should be defined" {
-            New-WPEnvironmentTest -Name 'Test'
+            New-WPEnvironmentTest
 
             Assert-MockCalled New-WPEnvironmentBase -Exact 1 -ParameterFilter { $SubnetName -eq 'Test' } -Scope It
         }

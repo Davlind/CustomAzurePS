@@ -11,11 +11,11 @@ Describe "New-WPEnvironmentBase" {
         Mock New-WPStorageAccount {return @{storageAccountName = "storage"}}
         Mock New-WPCloudService {return @{serviceName = "service"}}
         Mock Set-AzureSubscription {return}
-        Mock Get-WPDefaultServiceName { return "SomeName"}
-        
+        Mock Get-WPDefaultServiceName { return @{ storageAccountName = "storage"; serviceName = "service"; VirtualMachineName = "vm{0:D2}"}}
+
         It "should throw exception if no image is found" {
             Mock Get-WPLatestMicrosoftImage { return $null }
-            { New-WPEnvironmentBase -Name 'Name' } | Should Throw
+            { New-WPEnvironmentBase -Name 'Name' } | Should Throw "No OS Image was found matching 'Windows Server 2012 R2 Datacenter'"
         }
 
         It "should not throw exception if image is found" {
@@ -33,8 +33,8 @@ Describe "New-WPEnvironmentBase" {
         Mock New-WPCloudService {return @{serviceName = "service"}}
         Mock Set-AzureSubscription {return}
         Mock Get-WPLatestMicrosoftImage { return "someImage" }
-        Mock Get-WPDefaultServiceName { return "SomeName"}
-    
+        Mock Get-WPDefaultServiceName { return @{ storageAccountName = "storage"; serviceName = "service"; VirtualMachineName = "vm{0:D2}"}}
+
         It "11, virtual machines should have 11 instances" {
             Mock Get-WPLatestMicrosoftImage { return "someImage" }
             New-WPEnvironmentBase -Name 'Name' -InstanceCount 11
@@ -51,15 +51,15 @@ Describe "New-WPEnvironmentBase" {
         Mock New-WPCloudService {return @{serviceName = "service"}}
         Mock Set-AzureSubscription {return}
         Mock Get-WPLatestMicrosoftImage { return "someImage" }
-        Mock Get-WPDefaultServiceName { return "SomeName"}
+        Mock Get-WPDefaultServiceName { return @{ storageAccountName = "storage"; serviceName = "service"; VirtualMachineName = "vm{0:D2}"}}
 
-        It "name should be used if it is defined" {
-            New-WPEnvironmentBase -Name 'Test'
-            Assert-MockCalled Get-WPDefaultServiceName -Exact 0           
+        It "explicit name should be used if it is defined" {
+            New-WPEnvironmentBase -StorageName 'StorageName' -ServiceName 'ServiceName' -VirtualMachineName 'VMName'
+            Assert-MockCalled Get-WPDefaultServiceName -Exact 0
         }
 
         It "default name should be used if no explicit name is defined" {
-            New-WPEnvironmentBase
+            New-WPEnvironmentBase -Name 'Test'
             Assert-MockCalled Get-WPDefaultServiceName -Exact 1
         }
     }
