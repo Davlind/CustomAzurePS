@@ -61,11 +61,15 @@ function New-WPVM {
     # -LocalPort 443 `
     # -PublicPort 443
 
+    $StorageContext = New-AzureStorageContext -StorageAccountName ifwpdsc -StorageAccountKey 'j+Q9W1p1UtAEEORkQBnpEnmK6xETRlcKbjHXSnBFRu6iJnfjZBhuW/0aO869H7OV9mzFIv4AkeT0X0EBdFABhQ=='
+
     Write-Host "Preparing VM Desired State Configuration for $Name"
     $vm = Set-AzureVMDSCExtension `
     -VM $vm `
     -ConfigurationArchive 'Test.ps1.zip' `
-    -ConfigurationName 'TestConfig'
+    -ConfigurationName 'TestConfig' `
+    -StorageContext $StorageContext `
+    -Force
 
 
     # Specify VNet Subnet for VM
