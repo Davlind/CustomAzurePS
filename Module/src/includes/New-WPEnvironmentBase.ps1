@@ -49,10 +49,14 @@ function New-WPEnvironmentBase {
 
     $currentSubscription = Confirm-WPAzureSubscription
 
-    if (!$NoDomain.IsPresent)
+    if ($NoDomain.IsPresent)
     {
+        $credentials = Get-Credential -UserName "$env:UserName" -Message "Specify your credentials"
+    }    
+    else {
         $credentials = Get-Credential -UserName "$env:UserDomain\$env:UserName" -Message "Specify your credentials"
         Test-WPADCredentials $credentials
+    
     }
 
 
