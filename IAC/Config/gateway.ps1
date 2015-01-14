@@ -1,3 +1,3 @@
 @(
-    @{ VNetName = "WP"; GatewayType = "DynamicRouting"; GatewaySKU = "Default"}
+    @{ VNetName = "WP"; GatewayType = "StaticRouting"; GatewaySKU = "Default"}
 )

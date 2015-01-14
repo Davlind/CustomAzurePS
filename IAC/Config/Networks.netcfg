@@ -11,7 +11,7 @@
         <AddressSpace>
           <AddressPrefix>10.0.0.0/24</AddressPrefix>
         </AddressSpace>
-        <VPNGatewayAddress>10.162.0.1</VPNGatewayAddress>
+        <VPNGatewayAddress>148.122.140.226</VPNGatewayAddress>
       </LocalNetworkSite>
     </LocalNetworkSites>
     <VirtualNetworkSites>
@@ -21,7 +21,7 @@
         </AddressSpace>
         <Subnets>
           <Subnet name="GatewaySubnet">
-            <AddressPrefix>10.162.0.0/29</AddressPrefix>
+            <AddressPrefix>10.162.0.0/24</AddressPrefix>
           </Subnet>
           <Subnet name="Infrastructure">
             <AddressPrefix>10.162.1.0/24</AddressPrefix>
