@@ -4,12 +4,21 @@
     <Dns>
       <DnsServers>
         <DnsServer name="WPDNS" IPAddress="10.162.1.1" />
+        <DnsServer name="WPDNS2" IPAddress="8.8.8.8" />
       </DnsServers>
     </Dns>
     <LocalNetworkSites>
       <LocalNetworkSite name="Europe">
         <AddressSpace>
-          <AddressPrefix>10.0.0.0/24</AddressPrefix>
+          <AddressPrefix>10.152.0.0/16</AddressPrefix>
+          <AddressPrefix>10.128.0.0/16</AddressPrefix>
+          <AddressPrefix>10.146.0.0/16</AddressPrefix>
+          <AddressPrefix>10.136.0.0/16</AddressPrefix>
+          <AddressPrefix>10.134.0.0/16</AddressPrefix>
+          <AddressPrefix>10.154.0.0/16</AddressPrefix>
+          <AddressPrefix>10.150.0.0/16</AddressPrefix>
+          <AddressPrefix>10.142.0.0/16</AddressPrefix>
+          <AddressPrefix>10.158.0.0/16</AddressPrefix>
         </AddressSpace>
         <VPNGatewayAddress>148.122.140.226</VPNGatewayAddress>
       </LocalNetworkSite>
@@ -20,9 +29,6 @@
           <AddressPrefix>10.162.0.0/18</AddressPrefix>
         </AddressSpace>
         <Subnets>
-          <Subnet name="GatewaySubnet">
-            <AddressPrefix>10.162.0.0/24</AddressPrefix>
-          </Subnet>
           <Subnet name="Infrastructure">
             <AddressPrefix>10.162.1.0/24</AddressPrefix>
           </Subnet>
@@ -32,9 +38,13 @@
           <Subnet name="Test">
             <AddressPrefix>10.162.4.0/23</AddressPrefix>
           </Subnet>
+          <Subnet name="GatewaySubnet">
+            <AddressPrefix>10.162.0.0/24</AddressPrefix>
+          </Subnet>
         </Subnets>
         <DnsServersRef>
           <DnsServerRef name="WPDNS" />
+          <DnsServerRef name="WPDNS2" />
         </DnsServersRef>
         <Gateway>
           <ConnectionsToLocalNetwork>
