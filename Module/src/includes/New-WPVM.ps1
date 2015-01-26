@@ -24,6 +24,10 @@ function New-WPVM {
         [Parameter(Mandatory=$true)]
         [string]$InstanceSize,
 
+        [string]$DscConfig,
+
+        [string]$StaticIP,
+
         [Parameter(Mandatory=$true)]
         [PSCredential]$Credentials
     )
@@ -61,13 +65,15 @@ function New-WPVM {
     # -LocalPort 443 `
     # -PublicPort 443
 
-    $StorageContext = New-AzureStorageContext -StorageAccountName ifwpdsc -StorageAccountKey 'j+Q9W1p1UtAEEORkQBnpEnmK6xETRlcKbjHXSnBFRu6iJnfjZBhuW/0aO869H7OV9mzFIv4AkeT0X0EBdFABhQ=='
+    $StorageAccountKey = (Get-AzureStorageKey -StorageAccountName ifwpdsc -Verbose).Primary
+    $StorageContext = New-AzureStorageContext -StorageAccountName ifwpdsc -StorageAccountKey $StorageAccountKey
 
     Write-Host "Preparing VM Desired State Configuration for $Name"
     $vm = Set-AzureVMDSCExtension `
     -VM $vm `
-    -ConfigurationArchive 'Test.ps1.zip' `
-    -ConfigurationName 'TestConfig' `
+    -ConfigurationArchive ($DscConfig + '.ps1.zip') `
+    -ConfigurationName ($DscConfig + 'Config') `
+    -ConfigurationArgument @{ cred = $Credentials } `
     -StorageContext $StorageContext `
     -Force
 
@@ -77,6 +83,11 @@ function New-WPVM {
     $vm = Set-AzureSubnet `
     -VM $vm `
     -SubnetNames $SubnetName
+
+    Write-Host "Preparing Static IP for VM $Name"
+    $vm = Set-AzureStaticVNetIP `
+    -VM $vm `
+    -IPAddress $StaticIP
 
     # # Specify HA Availability Set for VM
     # $vm = Set-AzureAvailabilitySet `

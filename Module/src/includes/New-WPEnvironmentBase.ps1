@@ -22,25 +22,23 @@ function New-WPEnvironmentBase {
         [Parameter(Mandatory=$true, ParameterSetName = "NamingExplicit")]
         [string]$VirtualMachineName,
 
-        [Parameter(Position=2)]
         [string]$SubnetName='Dev',
 
-        [Parameter(Position=3)]
         [string]$InstanceSize='ExtraSmall',
 
-        [Parameter(Position=4)]
         [string]$InstanceCount=1,
 
-        [Parameter(Position=5)]
         [string]$Domain="waypoint.dev.ifint.biz",
 
-        [Parameter(Position=6)]
         [string]$DomainNetBIOS="waypoint",
 
-        [Parameter(Position=7)]
+        [string]$DscConfig,
+
+        [string]$StaticIP,
+
         [string]$ImageLabel = "Windows Server 2012 R2 Datacenter",
 
-        [switch]$NoDomain = $false
+        [switch]$NoDomain
     )
 
     $ErrorActionPreference = "Stop"
@@ -52,11 +50,10 @@ function New-WPEnvironmentBase {
     if ($NoDomain.IsPresent)
     {
         $credentials = Get-Credential -UserName "$env:UserName" -Message "Specify your credentials"
-    }    
+    }
     else {
         $credentials = Get-Credential -UserName "$env:UserDomain\$env:UserName" -Message "Specify your credentials"
         Test-WPADCredentials $credentials
-    
     }
 
 
@@ -92,9 +89,11 @@ function New-WPEnvironmentBase {
         -AffinityGroup 'WPNE' `
         -VNetName 'WP' `
         -SubnetName $SubnetName `
+        -StaticIP $StaticIP `
         -Image $image `
         -InstanceSize $InstanceSize `
         -Credentials $credentials `
+        -DscConfig $DscConfig
     }
 
     Write-VerboseCompleted $MyInvocation.MyCommand
