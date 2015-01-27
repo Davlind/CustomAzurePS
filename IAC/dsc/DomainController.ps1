@@ -21,7 +21,6 @@ configuration DomainControllerConfig
             DomainName = 'waypoint.ifint.biz'
             DomainAdministratorCredential = $cred
             SafemodeAdministratorPassword = $cred
-            DnsDelegationCredential = $cred
             DependsOn = "[WindowsFeature]ADDSInstall"
         }
 
