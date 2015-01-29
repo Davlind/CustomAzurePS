@@ -9,7 +9,9 @@ function New-WPEnvironmentDC {
 
     Write-VerboseBegin $MyInvocation.MyCommand
 
-    $credentials = Get-Credential -Message 'Specify a username and password to be used as administrator on the machine'
+    $domain = 'waypoint.ifint.biz'
+    $credentials = Get-Credential -Message 'Specify a username and password to be used as administrator on the machine. Do not include domain.'
+    $domainCredentials = New-Object System.Management.Automation.PSCredential("$domain\$($credentials.UserName)", $credentials.Password)
 
     $Configuration = @(
         @{
@@ -24,10 +26,11 @@ function New-WPEnvironmentDC {
                     Subnet = 'Infrastructure'
                     DscRole = 'DomainControllerPrimary'
                     DscConfig = @{
-                        Credential = $Credentials
-                        Domain = 'waypoint.ifint.biz'
+                        Credential = $credentials
+                        Domain = $domain
                     }
                     StaticIP = '10.162.1.4'
+                    AvailabilitySet = 'avs-domain'
                     Size = 'Small'
                     ImageLabel = 'Windows Server 2012 R2 Datacenter'
                     Credentials = $credentials
@@ -37,10 +40,12 @@ function New-WPEnvironmentDC {
                     Subnet = 'Infrastructure'
                     DscRole = 'DomainControllerSecondary'
                     DscConfig = @{
-                        Credential = $Credentials
-                        Domain = 'waypoint.ifint.biz'
+                        Credential = $credentials
+                        DomainCredential = $domainCredentials
+                        Domain = $domain
                     }
                     StaticIP = '10.162.1.5'
+                    AvailabilitySet = 'avs-domain'
                     Size = 'Small'
                     ImageLabel = 'Windows Server 2012 R2 Datacenter'
                     Credentials = $credentials
