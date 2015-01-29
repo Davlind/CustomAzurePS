@@ -1,9 +1,12 @@
-configuration DomainControllerConfig
+configuration DomainControllerPrimaryConfig
 {
-   param
+    param
     (
         [Parameter(Mandatory)]
-        [pscredential]$cred
+        [pscredential]$Credential,
+
+        [Parameter(Mandatory)]
+        [string]$Domain
     )
 
     Import-DscResource -ModuleName xActiveDirectory
@@ -18,16 +21,16 @@ configuration DomainControllerConfig
 
         xADDomain FirstDS
         {
-            DomainName = 'waypoint.ifint.biz'
-            DomainAdministratorCredential = $cred
-            SafemodeAdministratorPassword = $cred
+            DomainName = $Domain
+            DomainAdministratorCredential = $Credential
+            SafemodeAdministratorPassword = $Credential
             DependsOn = "[WindowsFeature]ADDSInstall"
         }
 
         xWaitForADDomain DscForestWait
         {
-            DomainName = 'waypoint.ifint.biz'
-            DomainUserCredential = $cred
+            DomainName = $Domain
+            DomainUserCredential = $Credential
             RetryCount = 30
             RetryIntervalSec = 30
             DependsOn = "[xADDomain]FirstDS"
@@ -35,10 +38,10 @@ configuration DomainControllerConfig
 
         xADUser FirstUser
         {
-            DomainName = 'waypoint.ifint.biz'
-            DomainAdministratorCredential = $cred
-            UserName = "daviddcadm"
-            Password = $cred
+            DomainName = $Domain
+            DomainAdministratorCredential = $Credential
+            UserName = "WaypointDA"
+            Password = $Credential
             Ensure = "Present"
             DependsOn = "[xWaitForADDomain]DscForestWait"
         }
