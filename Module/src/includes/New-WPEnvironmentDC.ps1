@@ -9,13 +9,47 @@ function New-WPEnvironmentDC {
 
     Write-VerboseBegin $MyInvocation.MyCommand
 
-    New-WPEnvironmentBase `
-        -SubnetName 'Infrastructure' `
-        -Name 'DC' `
-        -InstanceSize 'Large' `
-        -DscConfig 'DomainController' `
-        -StaticIP '10.162.1.5' `
-        -NoDomain:$true `
+    $credentials = Get-Credential -Message 'Specify a username and password to be used as administrator on the machine'
+
+    $Configuration = @(
+        @{
+            Type = 'Cloud Service'
+            Name = 'ifwpDomain'
+            ExplicitName = $true
+            Location = 'North Europe'
+            Replication = 'Standard_ZRS'
+            VMs = @(
+                @{
+                    Name = 'Pri'
+                    Subnet = 'Infrastructure'
+                    DscRole = 'DomainControllerPrimary'
+                    DscConfig = @{
+                        Credential = $Credentials
+                        Domain = 'waypoint.ifint.biz'
+                    }
+                    StaticIP = '10.162.1.4'
+                    Size = 'Small'
+                    ImageLabel = 'Windows Server 2012 R2 Datacenter'
+                    Credentials = $credentials
+                }
+                @{
+                    Name = 'Sec'
+                    Subnet = 'Infrastructure'
+                    DscRole = 'DomainControllerSecondary'
+                    DscConfig = @{
+                        Credential = $Credentials
+                        Domain = 'waypoint.ifint.biz'
+                    }
+                    StaticIP = '10.162.1.5'
+                    Size = 'Small'
+                    ImageLabel = 'Windows Server 2012 R2 Datacenter'
+                    Credentials = $credentials
+                }
+            )
+        }
+    )
+
+    New-WPResourceBase -Configuration $Configuration
 
     Write-VerboseCompleted $MyInvocation.MyCommand
 }
