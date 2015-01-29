@@ -3,8 +3,7 @@
   <VirtualNetworkConfiguration>
     <Dns>
       <DnsServers>
-        <DnsServer name="WPDNS" IPAddress="10.162.1.1" />
-        <DnsServer name="WPDNS2" IPAddress="8.8.8.8" />
+        <DnsServer name="WPDNS" IPAddress="10.162.1.4" />
       </DnsServers>
     </Dns>
     <LocalNetworkSites>
@@ -44,7 +43,6 @@
         </Subnets>
         <DnsServersRef>
           <DnsServerRef name="WPDNS" />
-          <DnsServerRef name="WPDNS2" />
         </DnsServersRef>
         <Gateway>
           <ConnectionsToLocalNetwork>
