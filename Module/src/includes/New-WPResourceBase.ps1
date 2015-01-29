@@ -34,21 +34,21 @@ function New-WPCloudService {
     $availableNames = Get-AvailableNames -Name $CloudServiceConfiguration.Name -ExplicitName:$CloudServiceConfiguration.ExplicitName
 
     # Create a storage account for the cloud service
-    Write-Host ("Creating Async Job for Storage Account ""{0}"" of type {2} in {1}" -f `
+    Write-Host ("Creating Storage Account ""{0}"" of type {2} in {1}... " -f `
         $availableNames.StorageAccountName, `
         $CloudServiceConfiguration.Location, `
-        $CloudServiceConfiguration.Replication)
+        $CloudServiceConfiguration.Replication) -NoNewLine
     New-AzureStorageAccount `
         -StorageAccountName $availableNames.StorageAccountName `
-        -Location $CloudServiceConfiguration.Location
+        -Location $CloudServiceConfiguration.Location | Write-Status
 
     # Create the cloud service
-    Write-Host ("Creating Async Job for Cloud Service ""{0}"" in {1}" -f `
+    Write-Host ("Creating Cloud Service ""{0}"" in {1}                  " -f `
         $availableNames.ServiceName, `
-        $CloudServiceConfiguration.Location)
+        $CloudServiceConfiguration.Location) -NoNewLine
     New-AzureService `
         -ServiceName $availableNames.ServiceName `
-        -Location $CloudServiceConfiguration.Location
+        -Location $CloudServiceConfiguration.Location | Write-Status
 
     # Switch to the new Storage Account
     $subscriptionId = Get-AzureSubscription | ? { $_.IsCurrent } | select -ExpandProperty SubscriptionId
@@ -112,7 +112,7 @@ function New-WPVirtualMachine {
     if ($VMConfig.DscRole)
     {
         Write-Verbose ("DSC Role {0} was defined. DSC Extension will be applied" -f $VMConfig.DscRole)
-        $StorageAccountKey = (Get-AzureStorageKey -StorageAccountName 'ifwpdsc' -Verbose).Primary
+        $StorageAccountKey = (Get-AzureStorageKey -StorageAccountName 'ifwpdsc').Primary
         $StorageContext = New-AzureStorageContext -StorageAccountName 'ifwpdsc' -StorageAccountKey $StorageAccountKey
 
         $vm = Set-AzureVMDSCExtension `
@@ -139,13 +139,22 @@ function New-WPVirtualMachine {
             -IPAddress $VMConfig.StaticIP
     }
 
-    Write-Host "Provisioning $vmName..."
+    # Specify HA Availability Set for VM
+    if ($VMConfig.AvailabilitySet)
+    {
+        Write-Verbose ("Availability Set was set to {0}" -f $VMConfig.AvailabilitySet)
+        $vm = Set-AzureAvailabilitySet `
+            -VM $vm `
+            -AvailabilitySetName $VMConfig.AvailabilitySet
+    }
+
+    Write-Host "Provisioning $vmName...                                 "
 
     New-AzureVM `
         -VMs $vm `
         -ServiceName $NamesCollection.ServiceName `
         -Location 'North Europe' `
-        -VNetName 'WP'
+        -VNetName 'WP' | Write-Status
 
     Write-VerboseCompleted $MyInvocation.MyCommand
 }
@@ -164,14 +173,16 @@ function Get-AvailableNames {
 
     Write-VerboseBegin $MyInvocation.MyCommand
 
+    # If the name is explicit, just return it...
     if ($ExplicitName.IsPresent)
     {
         return @{
                 ServiceName = $Name
-                StorageAccountName = ("{0}stor" -f $Name)
+                StorageAccountName = ("{0}stor" -f $Name).ToLower()
             }
     }
 
+    # Optimization in case we are the owners of colliding names
     $existingServices = Get-AzureService        | select -ExpandProperty ServiceName
     $existingStorage  = Get-AzureStorageAccount | select -ExpandProperty StorageAccountName
 
@@ -222,4 +233,24 @@ function Get-WPLatestMicrosoftImage
     }
 
     return $image
+}
+
+function Write-Status {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param (
+        [Parameter(Mandatory=$true, Position=1, ValueFromPipeline=$true)]
+        $Status
+    )
+
+    $color = 'White'
+    switch ($Status.OperationStatus)
+    {
+        "Succeeded" { $color = 'Green'}
+        "Failed"    { $color = 'Red'}
+        default     { $color = 'Yellow'}
+    }
+
+    Write-Host '[' -ForegroundColor 'White' -NoNewLine
+    Write-Host $Status.OperationStatus -ForegroundColor $color -NoNewLine
+    Write-Host ']' -ForegroundColor 'White'
 }
