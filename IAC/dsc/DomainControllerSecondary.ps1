@@ -6,6 +6,9 @@ configuration DomainControllerSecondaryConfig
         [pscredential]$Credential,
 
         [Parameter(Mandatory)]
+        [pscredential]$DomainCredential,
+
+        [Parameter(Mandatory)]
         [string]$Domain
     )
 
@@ -23,7 +26,7 @@ configuration DomainControllerSecondaryConfig
         {
             DomainName = $Domain
             DomainUserCredential = $Credential
-            RetryCount = 30
+            RetryCount = 120
             RetryIntervalSec = 30
             DependsOn = "[WindowsFeature]ADDSInstall"
         }
@@ -31,7 +34,7 @@ configuration DomainControllerSecondaryConfig
         xADDomainController SecondDC
         {
             DomainName = $Domain
-            DomainAdministratorCredential = $Credential
+            DomainAdministratorCredential = $DomainCredential
             SafemodeAdministratorPassword = $Credential
             DependsOn = "[xWaitForADDomain]DscForestWait"
         }
