@@ -41,7 +41,7 @@ function Confirm-WPAzureSubscription
                 $subscription =  $subscriptions `
                     | Out-GridView -PassThru -Title "Select Azure Subscription"
 
-                Select-AzureSubscription -SubscriptionName $subscription.SubscriptionName
+                Select-AzureSubscription -SubscriptionName $subscription.SubscriptionName -Default
 
                 Write-VerboseCompleted $MyInvocation.MyCommand
                 return $subscription.SubscriptionName
