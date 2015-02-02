@@ -99,14 +99,24 @@ function New-WPVirtualMachine {
 
     # Adding user and potentionally add to domain
     if ($VMConfig.Domain) {
-        # Todo: Add support for domain joined...
+        #$domainCredentials = New-Object System.Management.Automation.PSCredential("$($VMConfig.Domain)\$($VMConfig.Credentials.UserName)", $VMConfig.Credentials.Password)
+
+        $vm = Add-AzureProvisioningConfig `
+            -VM $vm `
+            -WindowsDomain `
+            -JoinDomain $VMConfig.Domain `
+            -Domain $VMConfig.Domain `
+            -DomainUserName $VMConfig.Credentials.UserName `
+            -DomainPassword $VMConfig.Credentials.GetNetworkCredential().Password `
+            -AdminUserName $VMConfig.Credentials.UserName `
+            -Password $VMConfig.Credentials.GetNetworkCredential().Password
     } else {
         Write-Verbose "No domain was specified. VM will be assigned to default workgroup"
         $vm = Add-AzureProvisioningConfig `
             -VM $vm `
             -Windows `
             -AdminUserName $VMConfig.Credentials.UserName `
-            -Password $VMConfig.Credentials.GetNetworkCredential().Password `
+            -Password $VMConfig.Credentials.GetNetworkCredential().Password
     }
 
     if ($VMConfig.DscRole)
