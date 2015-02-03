@@ -1,11 +1,18 @@
 function New-WPRemoteDesktopManagerFile {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param (
-        [Parameter(Mandatory=$true)]
         [string] $Path
     )
 
-    [xml]$xml = Get-Content $Path
+    [xml]$xml = Get-DummyXml
+
+    if ($Path) {
+        [xml]$xml = Get-Content $Path
+    } else {
+        $Path = ([System.IO.Path]::GetTempFileName() + '.rdg')
+    }
+
+    
 
     $azureGroup = $xml.RDCMan.file.group | ? { $_.properties.name -eq 'Azure' }
     if (!$azureGroup) {
@@ -166,6 +173,56 @@ function Create-ServerNode {
         $importNode = $rootNode.OwnerDocument.ImportNode($node.DocumentElement, $true);
 
         $null = $rootNode.AppendChild($importNode)
+}
+
+function Get-DummyXml {
+    return [xml]"<?xml version=""1.0"" encoding=""utf-8""?>
+<RDCMan schemaVersion=""1"">
+  <version>2.2</version>
+  <file>
+    <properties>
+      <name>RDC</name>
+      <expanded>True</expanded>
+      <comment />
+      <logonCredentials inherit=""FromParent"" />
+      <connectionSettings inherit=""FromParent"" />
+      <gatewaySettings inherit=""FromParent"" />
+      <remoteDesktop inherit=""None"">
+        <size>1024 x 768</size>
+        <sameSizeAsClientArea>True</sameSizeAsClientArea>
+        <fullScreen>False</fullScreen>
+        <colorDepth>32</colorDepth>
+      </remoteDesktop>
+      <localResources inherit=""None"">
+        <audioRedirection>0</audioRedirection>
+        <audioRedirectionQuality>0</audioRedirectionQuality>
+        <audioCaptureRedirection>0</audioCaptureRedirection>
+        <keyboardHook>2</keyboardHook>
+        <redirectClipboard>True</redirectClipboard>
+        <redirectDrives>True</redirectDrives>
+        <redirectPorts>False</redirectPorts>
+        <redirectPrinters>False</redirectPrinters>
+        <redirectSmartCards>False</redirectSmartCards>
+      </localResources>
+      <securitySettings inherit=""FromParent"" />
+      <displaySettings inherit=""FromParent"" />
+    </properties>
+    <group>
+      <properties>
+        <name>Azure</name>
+        <expanded>True</expanded>
+        <comment />
+        <logonCredentials inherit=""FromParent"" />
+        <connectionSettings inherit=""FromParent"" />
+        <gatewaySettings inherit=""FromParent"" />
+        <remoteDesktop inherit=""FromParent"" />
+        <localResources inherit=""FromParent"" />
+        <securitySettings inherit=""FromParent"" />
+        <displaySettings inherit=""FromParent"" />
+      </properties>
+    </group>
+  </file>
+</RDCMan>"    
 }
 
 try {
