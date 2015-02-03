@@ -21,6 +21,11 @@ function New-WPEnvironmentTest {
                 @{
                     Name = 'App'
                     Subnet = 'Test'
+                    DscRole = 'TestApplicationServer'
+                    DscConfig = @{
+                        Credential = $credentials
+                        Domain = $domain
+                    }
                     Size = 'Small'
                     ImageLabel = 'Windows Server 2012 R2 Datacenter'
                     Credentials = $credentials
